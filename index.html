@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        #con{
+            width:500px;
+            height:500px;
+            border-style: double;
+            padding:10px 20px;
+            overflow-y: auto;
+        
+            
+        }
+        #end{
+            visibility: hidden;
+        
+        }
+    </style>
+    <title>Socket.IO Client</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+
+      
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const socket = io();
+
+
+
+
+        
+             
+            
+            socket.on('connect', () => {
+                console.log('Connected to server');
+document.getElementById("send").addEventListener('click',(event)=>
+{
+    event.preventDefault();
+    const form=document.getElementById("msg");
+    const formvalue=form.value;
+    const room=document.getElementById("no").value;
+    const user=document.getElementById("name").value;
+    socket.emit('user', user);
+    socket.emit('clientmessage',formvalue,room);
+    if(formvalue === " ")
+return
+    displaymy(formvalue);
+    form.value=" ";
+
+    document.getElementById("group").addEventListener('click',(event)=>
+    {
+        const  group=document.getElementById("no").value;
+        socket.emit("joinroom",room);
+    })
+})
+
+
+    
+   
+
+               
+            });
+            document.getElementById("joinbtn").addEventListener('click', (event)=>
+{
+    const form=document.getElementById("name");
+    const formvalue=form.value;
+    if(formvalue === "") {alert("enter username");}
+else{event.preventDefault();
+document.getElementById("end").style.visibility="visible";
+document.getElementById("startform").style.visibility="hidden";}
+displayupyou();
+  socket.emit("username",formvalue);
+
+  socket.on("update",formvalue=>
+{
+    displayup(formvalue);
+}
+  )
+
+});
+
+document.getElementById("exit").addEventListener('click', (event)=>
+{
+    event.preventDefault();
+document.getElementById("end").style.visibility="hidden";
+document.getElementById("startform").style.visibility="visible";
+const form=document.getElementById("name");
+const formvalue=form.value;
+socket.emit("exit",formvalue);
+
+});
+socket.on("out",formvalue=>
+{
+    displayex(formvalue);
+}
+);
+
+            socket.on('socketId', (id) => {
+                console.log('Socket ID received from server:', id);
+                displayfrd(id);
+                
+            });
+            socket.on("recmessage",(a,data)=>
+        {
+            
+            displayfrd(a,data);
+           
+        });
+
+
+        function displayupyou()
+{
+    const div=document.createElement("div");
+    div.textContent="You joined group chat";
+    div.style.alignContent="center";
+    
+    document.getElementById("con").append(div);
+}
+
+
+
+      
+            function displayup(formvalue)
+{
+    const div=document.createElement("div");
+    div.textContent=formvalue+" joined group chat";
+    div.style.alignContent="center";
+    
+    document.getElementById("con").append(div);
+}
+
+      
+function displayex(formvalue)
+{
+    const div=document.createElement("div");
+    div.textContent=formvalue+" left group chat";
+    div.style.alignContent="center";
+    
+    document.getElementById("con").append(div);
+}
+function displaymy(formvalue)
+{
+    
+    const div2=document.createElement("div");
+    div2.textContent=formvalue;
+ 
+    div2.style.marginLeft="auto";
+    div2.style.marginBottom="10px";
+    div2.style.backgroundColor="green";
+    div2.style.maxWidth="40%";
+    div2.style.padding="10px 20px";
+    div2.style.borderRadius="10px";
+    div2.style.color="white";
+    div2.style.bottom="20px";
+    div2.style.wordWrap="break-word";
+    
+ 
+    document.getElementById("con").append(div2);
+}
+function displayfrd(a,data)
+{
+    
+    const div2=document.createElement("div");
+    const p1=document.createElement('p');
+    const p2=document.createElement('p');
+
+    p1.textContent=a;
+    p2.textContent=data;
+    p2.style.marginBottom="4px";
+ 
+  
+    div2.style.marginBottom="10px";
+    div2.style.backgroundColor="grey";
+    div2.style.maxWidth="40%";
+    div2.style.padding="10px 20px";
+    div2.style.borderRadius="10px";
+    div2.style.color="white";
+    div2.style.bottom="20px";
+    div2.style.wordWrap="break-word";
+    div2.append(p1);
+    div2.append(p2);
+ 
+ 
+    document.getElementById("con").append(div2);
+}
+            
+        });
+    </script>
+</head>
+<body>
+    <div id="start"> </div>
+        <div id="up"></div>
+        
+
+        <form id="startform">
+            <label for="name">Username</label>
+            <input type="text" id="name" >
+            <button id="joinbtn" >join</button>
+        </form>
+    </div>  
+
+
+    <div id="end">
+        <button id="exit">exit</button>
+    <div id="con"></div>
+  
+        <form id="endform">
+            <label for="msg">message</label>
+            <input type="text" id="msg">
+            <button id="send">send</button>
+        
+            <label for="no">Person</label>
+            <input type="text" id="no">
+            <button id="group">Group</button>
+        </form>
+    </div>
+ 
+</body>
+</html>
